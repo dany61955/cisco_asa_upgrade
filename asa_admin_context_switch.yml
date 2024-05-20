@@ -3,6 +3,20 @@
   hosts: cisco_asa
   gather_facts: no
   tasks:
+    - name: Enter enable mode
+      cisco.asa.asa_command:
+        commands:
+          - enable
+        prompt: 'Password:'
+        answer: '{{ enable_password }}'
+      register: enable_mode_output
+
+    - name: Verify enable mode
+      cisco.asa.asa_command:
+        commands:
+          - show curpriv
+      register: current_privilege
+
     - name: Switch to system context
       cisco.asa.asa_command:
         commands:
@@ -32,4 +46,3 @@
 
     - debug:
         msg: "Switched to context: {{ admin_context }}. Current privilege: {{ current_privilege.stdout[0] }}"
-
