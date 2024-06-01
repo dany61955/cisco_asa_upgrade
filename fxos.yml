@@ -1,0 +1,25 @@
+---
+- name: Switch to FXOS console from Cisco ASA
+  hosts: asa_devices
+  gather_facts: no
+
+  vars:
+    fxos_username: "your_fxos_username"
+    fxos_password: "your_fxos_password"
+
+  tasks:
+    - name: Switch to FXOS console
+      expect:
+        command: connect fxos
+        responses:
+          'Username:': "{{ fxos_username }}"
+          'Password:': "{{ fxos_password }}"
+      vars:
+        ansible_connection: network_cli
+        ansible_network_os: asa
+        ansible_user: "your_asa_username"
+        ansible_password: "your_asa_password"
+        ansible_become: yes
+        ansible_become_method: enable
+        ansible_become_password: "your_asa_enable_password"
+
