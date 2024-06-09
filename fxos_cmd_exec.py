@@ -1,7 +1,6 @@
 import paramiko
 import time
 import json
-import os
 
 def execute_command(shell, command, wait_time=1):
     shell.send(command + '\n')
@@ -19,6 +18,7 @@ def main():
     asa_ip = "x.x.x.x"
     asa_username = "asa_user"
     asa_password = "asa_password"
+    asa_enable_password = "enable_password"
     
     fxos_username = "fxos_user"
     fxos_password = "fxos_password"
@@ -43,6 +43,20 @@ def main():
         # Invoke an interactive shell session on the remote device
         shell = ssh_client.invoke_shell()
         time.sleep(1)  # Wait for the shell to be ready
+
+        # Enter enable mode
+        output = execute_command(shell, "enable", wait_time=2)
+        result["output"] += output
+        
+        # Provide enable password
+        output = execute_command(shell, asa_enable_password, wait_time=2)
+        result["output"] += output
+        
+        # Check if we are in enable mode
+        output = execute_command(shell, "show privilege", wait_time=2)
+        result["output"] += output
+        if "Level 15" not in output:
+            raise Exception("Failed to enter enable mode")
         
         # Execute each command in the list
         for command in commands:
