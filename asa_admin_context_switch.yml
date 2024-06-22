@@ -29,6 +29,14 @@
           - show context
       register: show_context_output
 
+    - name: Extract context names
+      set_fact:
+        context_names: "{{ show_context_output.stdout_lines | map('regex_replace', '^\\*(.+)', '\\1') | map('regex_replace', '^([^ ]+).+', '\\1') | select('match', '^[a-zA-Z0-9_]+$') | list }}"
+    - name: Print extracted context names
+      debug:
+        var: context_names
+
+
     - name: Parse admin context
       set_fact:
         admin_context: "{{ show_context_output.stdout[0].split('\n') | select('search', '\\*') | list | first | regex_search('^(\\*\\s+)?(\\S+)', '\\2') }}"
