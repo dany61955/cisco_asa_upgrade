@@ -121,11 +121,15 @@ def run_module():
 
         # Write the collected output to the specified file if defined
         if output_file:
+            file_extension = os.path.splitext(output_file)[1].lower()
             with open(output_file, 'w') as f:
-                for cmd_result in result['message']:
-                    f.write(f"Command: {cmd_result['command']}\n")
-                    f.write("\n".join(cmd_result['output']))
-                    f.write(f"\nExecution Time: {cmd_result['execution_time']} seconds\n\n")
+                if file_extension == '.json':
+                    json.dump(result['message'], f, indent=4)  # Write command results in JSON format
+                else:
+                    for cmd_result in result['message']:
+                        f.write(f"Command: {cmd_result['command']}\n")
+                        f.write("\n".join(cmd_result['output']))
+                        f.write(f"\nExecution Time: {cmd_result['execution_time']} seconds\n\n")
 
         module.exit_json(**result)
 
